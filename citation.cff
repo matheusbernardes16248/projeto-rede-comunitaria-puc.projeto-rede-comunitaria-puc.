@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: Please cite this software using these metadata.
+title: Nexum 
+authors:
+  - family-names: Marques de Moura
+    given-names: Breno
+  - family-names: Guimarães dos Santos
+    given-names: Erison
+  - family-names: dos Reis Marques
+    given-names: Márcia Maria
+  - family-names: Caruzzo Modica
+    given-names: Maria Cecilia
+  - family-names: Turibio Gressi
+    given-names: Mariana
+  - family-names: Feliciano Andrade Bernardes
+    given-names: Matheus 
+  - name-suffix: Professor
+    affiliation: PUC Minas
+    family-names: Jeunon de Alencar
+    given-names: Bernardo  
+keywords:
+  - Ong
+  - Voluntariado
+  - Doação
+repository-code:  https://github.com/ICEI-PUC-Minas-PMV-ADS/pmv-ads-2025-2-e2-proj-int-t7-g1-rede-comunitaria-sustentavel
+version: 1.0.0
+date-released: 2025-12-07
