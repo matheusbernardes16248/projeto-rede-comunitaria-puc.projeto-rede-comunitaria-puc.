@@ -1,0 +1,61 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+<ul class="navbar-nav ms-3 align-items-center">
+    @if (SignInManager.IsSignedIn(User))
+    {
+
+        @if (!User.IsInRole("Admin"))
+        {
+            <li class="nav-item me-2">
+                @if (User.IsInRole("Ong"))
+                {
+                    
+                    <a class="nav-link profile-icon"
+                       asp-area=""
+                       asp-controller="Ongs"
+                       asp-action="MeuPerfil"
+                       title="Meu Perfil da ONG">
+                        <i class="bi bi-person-circle"></i>
+                    </a>
+                }
+                else
+                {
+                   
+                    <a class="nav-link profile-icon"
+                       asp-area="Identity"
+                       asp-page="/Account/Manage/Index"
+                       title="Minha Conta">
+                        <i class="bi bi-person-circle"></i>
+                    </a>
+                }
+            </li>
+        }
+        <a class="nav-link profile-icon"
+          style="margin-right: 5px;"
+          asp-area="Identity"
+          asp-page="/Account/Manage/ChangePassword"
+          title="Minha Conta">
+            <i class="bi bi-gear"></i>
+        </a>
+        
+        <li class="nav-item">
+            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout"
+                  asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button type="submit" class="nav-link btn btn-link p-0 logout-btn">Logout</button>
+            </form>
+        </li>
+       
+    }
+    else
+    {
+        
+        <li class="nav-item">
+            <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Cadastro</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Login</a>
+        </li>
+    }
+</ul>

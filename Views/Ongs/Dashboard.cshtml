@@ -1,0 +1,1383 @@
+﻿@model nexumApp.Models.Ong
+@using nexumApp.Models;
+@{
+    ViewData["Title"] = "Meu Dashboard";
+
+   
+    var metas = (IEnumerable<nexumApp.Models.Meta>)ViewBag.Metas;
+    var vagas = (IEnumerable<nexumApp.Models.Vaga>)ViewBag.Vagas;
+}
+
+<style>
+
+    h1{
+        color: #16435D;
+        font-weight: 600;
+        font-size: clamp(25px, 7vw, 44px);
+        margin: 40px 0 6px 0;
+    }
+
+    h2{
+        color: #16435D;
+        font-weight: 400;
+        font-size: 35px;
+    }
+
+   .horizontal-scroll-container{
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 1.5rem;
+        -webkit-overflow-scrolling: touch;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+   }
+
+   .horizontal-scroll-container::-webkit-scrollbar {
+            display: none;
+        }
+
+   .vaga-card-item{
+        display: inline-block;
+        margin-right: 1.5rem;
+        width: 320px;
+        max-width:90vw;
+        vertical-align: top;
+        white-space: normal;
+   }
+
+    .vagas-carousel-wrapper {
+        position: relative;
+    }
+
+    .vaga-carousel-btn {
+        position: absolute;
+        top: 190px;
+        justify-content: center;
+        z-index: 10;
+        background-color: rgba(255, 255, 255, 0.9);
+        border: 1px solid #ddd;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+        color: #16435D;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        display: flex; 
+        align-items:center;
+    }
+
+        .vaga-carousel-btn:hover {
+            background-color: #fff;
+            color: #000;
+        }
+
+        .vaga-carousel-btn.prev {
+            left: 5px; 
+        }
+
+        .vaga-carousel-btn.next {
+            right: 5px;
+        }
+    
+    /* Design do Card de Vaga */
+    .vaga-card-design {
+        background-color: #fff;
+        border: 1.5px solid #e0e0e0;
+        border-radius: 30px;
+        padding: 1.25rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; 
+        box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        transition: all 0.2s ease-in-out;
+    }
+
+    .vaga-card-design:hover {
+            border-color: #16435D;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    }
+
+    .vaga-card-design .card-title-public 
+    {
+        text-align:center;
+    }
+
+    .card-ong-name {
+        font-size: 0.9rem;
+        color: #6c757d; 
+        margin-bottom: 0.75rem;
+        text-align: center;
+    }
+    
+    .card-text-public {
+        font-size: 0.95rem;
+        color: #333;
+    }
+
+    .location-info {
+        font-size: 0.9rem;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        justify-content: center;
+    }
+    
+    /* Status (Data ou Recorrente) */
+    .vaga-status-tag {
+        width: 100%;
+        padding: 8px 12px;
+        border-radius: 8px;
+        text-align: center;
+        font-weight: 600;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Cor para status "Data/caixinha" */
+    .status-data {
+        background-color: #16435D; 
+        color: white;
+        border-radius: 80px;
+    }
+
+    /* Cor para status "Recorrente" */
+    .status-recorrente {
+        background-color: #16435D;
+        color: #fff;
+    }
+
+    /* Botao "Editar" e "Excluir" */
+    .vaga-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: space-between;
+    }
+
+    .vaga-actions .btn {
+        flex-grow: 1; 
+        border-radius: 20px;
+        font-weight: 500;
+    }
+
+    /* Estilos do Modal  */
+    .form-divider {
+        margin: 1rem 0;
+        border-top: 1px solid #eee;
+    }
+    .btn-close-custom {
+        background: none;
+        border: none;
+        font-size: 1.75rem;
+        font-weight: 300;
+        line-height: 1;
+        color: #888;
+        opacity: 1;
+    }
+    .btn-close-custom:hover {
+        color: #000;
+    }
+    .form-control-custom {
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+    }
+    .form-control-custom:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25);
+    }
+    .btn-custom.btn-adicionar-small {
+        background-color: #16435D;
+        color: white;
+        border: none;
+        padding: 10px 40px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    .image-preview {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        margin-top: 10px;
+        display: none; 
+    }
+    .horizontal-scroll-container .col p,
+.horizontal-scroll-container > div > p {
+    
+    text-align: center;
+    color: #6c757d;
+    font-size: 0.95rem;
+}
+
+.btn-adicionar-custom{
+     color: #ffffff;
+     background-color: #2987bf;
+     border: none;
+     border-radius: 24px;
+     cursor: pointer;
+    }
+
+    .btn-adicionar-custom:hover {
+        background-color: #16435D;
+        color: #ffffff;
+    }
+
+</style>
+
+<h1 class="mb-4">Olá, @Model.Nome!</h1>
+
+<hr class="section-divider" />
+
+<div class="d-flex align-items-center gap-3 mt-5">
+    <h2 class="mb-0" style="font-weight: 600;">Minhas vagas</h2>
+    
+    <button type="button" class="btn btn-outline-primary btn-adicionar-custom" style="border-radius: 80px"; data-bs-toggle="modal" data-bs-target="#modalNovaVaga">
+        Adicionar
+    </button>
+    
+</div>
+
+<div class="vagas-carousel-wrapper">
+   
+    <button class="btn vaga-carousel-btn prev" id="vaga-scroll-prev" aria-label="Rolar para esquerda">&lt;</button>
+
+
+<div class="horizontal-scroll-container m-3" id="vagas-container">
+    @if (vagas != null && vagas.Any())
+    {
+        @foreach (var vaga in vagas)
+        {
+            <div class="vaga-card-item">
+                
+                <div class="vaga-card-design">
+                    <div>
+
+                            @if (!string.IsNullOrEmpty(vaga.ImagemUrl))
+                            {
+                                
+                                <img src="@vaga.ImagemUrl" asp-append-version="true" class="card-img-top mb-3" style="border-radius: 15px; height: 180px; object-fit: cover;" alt="@vaga.Titulo">
+                            }
+
+                        <h5 class="card-title-public">@vaga.Titulo</h5>
+                        <p class="card-ong-name">@Model.Nome</p> 
+                        <p class="card-text-public">
+                            @vaga.Descricao
+                        </p>
+                        <div class="location-info mt-2">
+                            <i class="bi bi-geo-alt-fill"></i> 
+                            <span>
+                                @Model.Endereço 
+                            </span>
+                        </div>
+                    </div>
+
+                    <div>
+                        
+                        <div class="vaga-status-tag @(vaga.Status != null && vaga.Status.ToLower() == "recorrente" ? "status-recorrente" : "status-data")">
+                            @vaga.Status
+                        </div>
+
+                        
+                        <div class="vaga-actions">
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalEditarVaga"
+                                    data-vaga-id="@vaga.IdVaga">Editar</button>
+
+                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"data-bs-target="#modalExcluirVaga" 
+                              data-vaga-id="@vaga.IdVaga" data-vaga-titulo="@vaga.Titulo">Excluir</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+            <div class="col" style="width: 100%; text-align: center; padding: 2rem 0;">
+            <p>Você ainda não criou nenhuma vaga. Clique em "Adicionar" para começar!</p>
+        </div>
+    }
+
+        <button class="btn vaga-carousel-btn next" id="vaga-scroll-next" aria-label="Rolar para direita">&gt;</button>
+
+</div>
+
+<div class="modal fade" id="modalExcluirVaga" tabindex="-1" aria-labelledby="modalExcluirVagaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px;">
+           
+            <form asp-controller="Vagas" asp-action="Delete" method="post">
+                
+               @Html.AntiForgeryToken()
+                <input type="hidden" id="deleteVagaId" name="id" />
+
+                <div class="modal-header border-0 pb-0 bg-danger text-white" style="border-top-left-radius: 15px; border-top-right-radius: 15px;">
+                    <h5 class="modal-title w-100 text-center" id="modalExcluirVagaLabel" style="font-weight: 700; font-size: 1.5rem;">
+                        CONFIRMAR EXCLUSÃO
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <p class="lead mt-3 fw-bold">Tem certeza que deseja excluir esta vaga?</p>
+                   
+                    <h3 id="deleteVagaTitulo" class="text-danger"></h3>
+                    <p class="text-muted small mt-3">Esta ação não pode ser desfeita.</p>
+                </div>
+                <div class="modal-footer border-0 d-flex justify-content-center p-4 pt-0 gap-2">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-radius: 20px; padding: 10px 40px;">Cancelar</button>
+                    <button type="submit" class="btn btn-danger" style="border-radius: 20px; padding: 10px 40px;"> Excluir</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalEditarVaga" tabindex="-1" aria-labelledby="modalEditarVagaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px;">
+
+            <form asp-controller="Vagas" asp-action="Edit" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+
+               
+                <input type="hidden" id="editVagaId" name="IdVaga" />
+                <input type="hidden" id="editVagaIdOng" name="IdONG" />
+                    <input type="hidden" id="editImagemUrlAtual" name="ImagemUrl" />
+
+              <div class="modal-header border-0 pb-0 bg-primary text-white" style="border-top-left-radius: 15px; border-top-right-radius: 15px;">
+                    <h5 class="modal-title w-100 text-center" id="modalEditarVagaLabel" style="font-weight: 700; font-size: 1.5rem;">
+                        EDITAR VAGA
+                    </h5>
+                    <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Close">
+                        &times;
+                    </button>
+                </div>
+                <div class="modal-body p-4 pt-2">
+                        <p class="text-center fw-bold text-muted small">Altere os dados da vaga</p>
+                    <hr class="form-divider" />
+                    <div class="mb-3">
+                        <label for="editTitulo" class="form-label">Título da Vaga</label>
+                        <input type="text" class="form-control rounded-pill form-control-custom" id="editTitulo" name="Titulo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDescricao" class="form-label">Descrição da Vaga</label>
+                        <textarea class="form-control form-control-custom" id="editDescricao" name="Descricao" style="height: 100px" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editStatus" class="form-label">Status ou Data</label>
+                        <input type="text" class="form-control rounded-pill form-control-custom" id="editStatus" name="Status" required>
+                    </div>
+
+                        <div class="mb-3">
+                            <label for="editEndereco" class="form-label">Local da Vaga</label>
+                            <select class="form-select form-control-custom rounded-pill" id="editEndereco" name="IdFilial">
+                                <option value="" selected disabled>Carregando...</option>
+                            </select>
+                        </div>
+
+                    <div class="mb-3">
+                         <label for="editImagemFile" class="form-label">Alterar Imagem da Vaga (Opcional)</label>
+                         <input type="file" class="form-control form-control-custom" id="editImagemFile" name="imagemFile" accept="image/png, image/jpeg">
+                        <small class="text-muted">Deixe em branco para manter a imagem atual.</small>
+                    </div>
+                       
+                        <img id="editImagePreview" src="" alt="Pré-visualização" class="image-preview" />
+
+                </div>
+                <div class="modal-footer border-0 d-flex justify-content-center p-4 pt-0">
+                    <button type="submit" class="btn btn-primary btn-custom btn-adicionar-small" style="background-color: #0d6efd;">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+    <hr class="section-divider" />
+
+    <div class="d-flex align-items-center gap-3 mt-5">
+        <h2 class="mb-0" style="font-weight: 600;">Minhas metas</h2>
+        <button type="button" class="btn btn-outline-primary rounded-pill btn-adicionar-custom" data-bs-toggle="modal" data-bs-target="#modalCriarMeta">
+            Adicionar
+        </button>
+    </div>
+
+    <div class="vagas-carousel-wrapper">
+
+        <button class="btn vaga-carousel-btn prev" id="meta-scroll-prev" aria-label="Rolar para esquerda">&lt;</button>
+
+        <div class="horizontal-scroll-container m-3" id="metas-container">
+            @if (metas.Any())
+            {
+                @foreach (var meta in metas)
+                {
+                    <div class="vaga-card-item">
+
+                        <div class="vaga-card-design">
+
+                            <div>
+                                @if (!string.IsNullOrEmpty(meta.ImagemUrl))
+                                {
+                                    <img src="@meta.ImagemUrl" asp-append-version="true" class="card-img-top mb-3" style="border-radius: 15px; height: 180px; object-fit: cover;" alt="@meta.Recurso">
+                                }
+
+                                <h5 class="card-title-public text-center">@meta.Recurso</h5>
+                                <p class="card-ong-name">@meta.Ong.Nome</p>
+                                <p class="card-text-public">@meta.Descricao</p>
+                                <div class="location-info mt-2">
+                                    <i class="bi bi-geo-alt-fill"></i>
+                                    @if (meta.Filial != null)
+                                    {
+                                        <span>@meta.Filial.Endereço</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@meta.Ong.Endereço</span>
+                                    }
+                                </div>
+
+                                @{
+                                    var progresso = (meta.ValorAlvo > 0) ? ((double)meta.ValorAtual / meta.ValorAlvo) * 100 : 0;
+                                    var progressoFormatado = progresso.ToString("F0");
+                                }
+                                <div class="mb-2 mt-3">
+                                    <small class="text-muted" id="meta-progresso-texto-@meta.Id">
+                                        Progresso: @meta.ValorAtual de @meta.ValorAlvo
+                                    </small>
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar" role="progressbar" id="meta-progresso-barra-@meta.Id"
+                                             style="width: @(progressoFormatado)%;"
+                                             aria-valuenow="@progressoFormatado"
+                                             aria-valuemin="0"
+                                             aria-valuemax="100">
+                                            @(progressoFormatado)%
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @if (meta.DataFim.HasValue)
+                                {
+                                    <p class="small text-muted mt-2 mb-2 text-center">
+                                        Encerra em: @meta.DataFim.Value.ToString("dd/MM/yyyy")
+                                    </p>
+                                }
+                            </div>
+
+                            <div>
+                                <div class="vaga-status-tag status-data">
+                                    @meta.Status
+                                </div>
+
+                                <div class="vaga-actions">
+                                    <button type="button" class="btn btn-outline-info btn-ver-doacoes"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalVerDoacoes"
+                                            data-meta-id="@meta.Id"
+                                            data-meta-titulo="@meta.Recurso">
+                                        Ver Doações
+                                    </button>
+                                    <button type="button"
+                                            class="btn btn-outline-primary"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalEditarMeta"
+                                            data-meta-id="@meta.Id">
+                                        Editar
+                                    </button>
+
+                                    <button type="button"
+                                            class="btn btn-outline-danger"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalExcluirMeta"
+                                            data-meta-id="@meta.Id"
+                                            data-meta-recurso="@meta.Recurso">
+                                        Excluir
+                                    </button>
+                                 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div style="width: 100%; text-align: center; padding: 2rem 0;">
+                    <p>Você ainda não criou nenhuma meta. Clique em "Adicionar" para começar!</p>
+                </div>
+            }
+        </div> <button class="btn vaga-carousel-btn next" id="meta-scroll-next" aria-label="Rolar para direita">&gt;</button>
+
+    </div>
+
+    <div class="modal fade" id="modalNovaVaga" tabindex="-1" aria-labelledby="modalNovaVagaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px;">
+
+                <form asp-controller="Vagas" asp-action="Create" method="post" enctype="multipart/form-data">
+                    <div class="modal-header border-0 pb-0">
+
+                        <h5 class="modal-title w-100 text-center" id="modalNovaVagaLabel" style="font-weight: 700; font-size: 1.5rem;">
+                            FORMULÁRIO DE NOVA VAGA
+                        </h5>
+                        <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Close">
+                            &times;
+                        </button>
+                    </div>
+                    <div class="modal-body p-4 pt-2">
+                        <p class="text-center text-muted small">Preencha os dados abaixo</p>
+                        <hr class="form-divider" />
+                        <div class="mb-3">
+                            <label for="Titulo" class="form-label">Título da Vaga</label>
+                            <input type="text" class="form-control rounded-pill form-control-custom" id="Titulo" name="Titulo" placeholder="Ex: Fotógrafo(a) PET" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="Descricao" class="form-label">Descrição da Vaga</label>
+                            <textarea class="form-control form-control-custom" id="Descricao" name="Descricao" placeholder="Ex: Precisamos de voluntários para..." style="height: 100px" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="Status" class="form-label">Status ou Data</label>
+                            <input type="text" class="form-control rounded-pill form-control-custom" id="Status" name="Status" placeholder="Ex: Recorrente ou 20/11/2025" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="imagemFile" class="form-label">Imagem da Vaga (Opcional)</label>
+                            <input type="file" class="form-control form-control-custom" id="imagemFile" name="imagemFile" accept="image/png, image/jpeg">
+                        </div>
+
+                       
+
+                        <div class="mb-3">
+                            <label for="Endereco" class="form-label">Selecione a matriz ou a filial</label>
+                            <select class="form-select form-control-custom rounded-pill" id="Endereco" name="IdFilial" required>
+                                <option value="" selected disabled>Selecione o local</option>
+                                <option value="">Sede Principal (@Model.Nome)</option>
+                                @if (ViewBag.Filiais != null)
+                                {
+                                    foreach (var filial in ViewBag.Filiais)
+                                    {
+                                        <option value="@filial.Id">@filial.Endereço</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <p class="text-center text-muted small mt-4">
+                            Após criar a vaga, ela será exibida no seu painel.
+                        </p>
+                    </div>
+                    <div class="modal-footer border-0 d-flex justify-content-center p-4 pt-0">
+                        <button type="submit" class="btn btn-primary btn-custom btn-adicionar-small">Adicionar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Criar Meta -->
+    <div class="modal fade" id="modalCriarMeta" tabindex="-1" aria-labelledby="modalCriarMetaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px;">
+
+                <form asp-controller="Metas" asp-action="Create" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+
+                    
+                    <div class="modal-header border-0 pb-0">
+                        <h5 class="modal-title w-100 text-center" id="modalCriarMetaLabel" style="font-weight: 700; font-size: 1.5rem;">
+                            FORMULÁRIO DE NOVA META
+                        </h5>
+                        <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Close">
+                            &times;
+                        </button>
+                    </div>
+
+                    <div class="modal-body p-4 pt-2">
+                        <p class="text-center text-muted small">Preencha os dados abaixo</p>
+                        <hr class="form-divider" />
+
+                        <div class="mb-3">
+                        <label for="FilialId" class="form-label">Filial (Local da Meta)</label>
+                        <select class="form-select form-control-custom rounded-pill" id="FilialId" name="FilialId">
+
+                            <option value="">Sede Principal (@ViewBag.OngNome)</option>
+
+                            @if (ViewBag.Filiais != null)
+                            {
+                                @foreach (var filial in ViewBag.Filiais)
+                                {
+                                    <option value="@filial.Id">@filial.Endereço</option>
+                                }
+                            }
+                        </select>
+                        <small class="text-muted">Selecione a filial para qual deseja criar a meta.</small>
+                    </div>
+
+                        <div class="mb-3">
+                            <label for="Recurso" class="form-label">Nome do Recurso</label>
+                            <input type="text" class="form-control rounded-pill form-control-custom" id="Recurso" name="Recurso" placeholder="Ex: Ração para cães" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="Descricao" class="form-label">Descrição</label>
+                            <textarea class="form-control form-control-custom" id="Descricao" name="Descricao" placeholder="Ex: 5 sacos de ração de 1kg" style="height: 100px" required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="ValorAlvo" class="form-label">Quantidade Necessária</label>
+                            <input type="number" class="form-control rounded-pill form-control-custom" id="ValorAlvo" name="ValorAlvo" placeholder="Ex: 200" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="Status" class="form-label">Status da Meta</label>
+                            <select class="form-select form-control-custom rounded-pill" id="Status" name="Status" required>
+                                <option value="Ativa">Ativa (Visível para doações)</option>
+                                <option value="Pausada">Pausada (Não visível)</option>
+                                <option value="Concluída">Concluída</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="DataFim" class="form-label">Data de Encerramento (Opcional)</label>
+                            <input type="date" class="form-control rounded-pill form-control-custom" id="DataFim" name="DataFim">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="imagemFile" class="form-label">Imagem da Meta (Opcional)</label>
+                            <input type="file" class="form-control form-control-custom" id="imagemFile" name="imagemFile" accept="image/png, image/jpeg">
+                        </div>
+                    </div>
+
+                    
+                    <div class="modal-footer border-0 d-flex justify-content-center p-4 pt-0">
+                        <button type="submit" class="btn btn-primary btn-custom btn-adicionar-small">
+                            Adicionar
+                        </button>
+                    </div>
+                </form> 
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalExcluirMeta" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px;">
+
+                <form asp-controller="Metas" asp-action="Delete" method="post">
+                    @Html.AntiForgeryToken()
+
+                    @* O JAVASCRIPT VAI PROCURAR ESTE ID AQUI: *@
+                    <input type="hidden" id="deleteMetaId" name="id" />
+
+                    <div class="modal-header border-0 pb-0 bg-danger text-white">
+                        <h5 class="modal-title w-100 text-center">CONFIRMAR EXCLUSÃO</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body p-4 text-center">
+                        <p class="lead fw-bold">Tem certeza?</p>
+                        <p>Você vai excluir a meta:</p>
+
+                        @* E VAI ESCREVER O NOME AQUI: *@
+                        <h3 id="deleteMetaRecurso" class="text-danger fw-bold">...</h3>
+
+                        <p class="text-muted small mt-3">Esta ação é irreversível.</p>
+                    </div>
+
+                    <div class="modal-footer border-0 d-flex justify-content-center">
+                        <button type="button" style="border-radius: 20px; padding: 10px 40px;" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" style="border-radius: 20px; padding: 10px 40px;" class="btn btn-danger">Excluir Agora</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+                    <div class="modal fade" id="modalEditarMeta" tabindex="-1" aria-labelledby="modalEditarMetaLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content" style="border-radius: 15px;">
+
+                                <form asp-controller="Metas" asp-action="Edit" method="post" enctype="multipart/form-data">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" id="editMetaId" name="Id" />
+
+                                    <div class="modal-header border-0 pb-0 bg-primary text-white" style="border-top-left-radius: 15px; border-top-right-radius: 15px;">
+                                        <h5 class="modal-title w-100 text-center" id="modalEditarMetaLabel" style="font-weight: 700; font-size: 1.5rem;">
+                                            EDITAR META
+                                        </h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body p-4 pt-2">
+                                        <p class="text-center fw-bold text-muted small">Altere os dados da meta</p>
+                                        <hr class="form-divider" />
+
+                                        <div class="mb-3">
+                                            <label for="editMetaRecurso" class="form-label">Recurso</label>
+                                            <input type="text" class="form-control rounded-pill form-control-custom" id="editMetaRecurso" name="Recurso" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editMetaDescricao" class="form-label">Descrição</label>
+                                            <textarea class="form-control form-control-custom" id="editMetaDescricao" name="Descricao" style="height: 100px" required></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editMetaValorAlvo" class="form-label">Valor Alvo</label>
+                                            <input type="number" class="form-control rounded-pill form-control-custom" id="editMetaValorAlvo" name="ValorAlvo" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editMetaStatus" class="form-label">Status</label>
+                                            <select class="form-select form-control-custom rounded-pill" id="editMetaStatus" name="Status" required>
+                                                <option value="Ativa">Ativa</option>
+                                                <option value="Pausada">Pausada</option>
+                                                <option value="Concluída">Concluída</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editMetaFilialId" class="form-label">Filial (Local da Meta)</label>
+                                            <select class="form-select form-control-custom rounded-pill" id="editMetaFilialId" name="FilialId">
+                                                </select>
+                                            <small class="text-muted">Selecione o local onde o recurso será coletado/usado.</small>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editMetaDataFim" class="form-label">Data de Encerramento (Opcional)</label>
+                                            <input type="date" class="form-control rounded-pill form-control-custom" id="editMetaDataFim" name="DataFim">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editMetaImagemFile" class="form-label">Alterar Imagem (Opcional)</label>
+                                            <input type="file" class="form-control form-control-custom" id="editMetaImagemFile" name="imagemFile" accept="image/png, image/jpeg">
+                                            <small class="text-muted">Deixe em branco para manter a imagem atual.</small>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer border-0 d-flex justify-content-center p-4 pt-0">
+                                        <button type="submit" class="btn btn-primary" style="border-radius: 20px; padding: 10px 40px; font-weight: 600;">Salvar Alterações</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+    <div class="modal fade" id="modalVerDoacoes" tabindex="-1" aria-labelledby="modalVerDoacoesLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content" style="border-radius: 15px;">
+                <div class="modal-header bg-info text-white" style="border-top-left-radius: 15px; border-top-right-radius: 15px;">
+                    <h5 class="modal-title" id="modalVerDoacoesLabel">Doações Recebidas</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h4 class="text-center mb-3" id="modalVerDoacoesTitulo"></h4>
+                    <div id="modalVerDoacoesConteudo">
+                        <div class="text-center p-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Carregando...</span>
+                            </div>
+                            <p class="mt-2">Buscando doações...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+@section Scripts {
+    <script>
+
+       
+        
+        window.addEventListener('load', function() {
+
+            
+
+            
+                var deleteModalElement = document.getElementById('modalExcluirVaga');
+                if (deleteModalElement) {
+                    deleteModalElement.addEventListener('show.bs.modal', function (event) {
+                        var button = event.relatedTarget;
+                        if (button) {
+                            var vagaId = button.getAttribute('data-vaga-id');
+                            var vagaTitulo = button.getAttribute('data-vaga-titulo');
+                            var modalTituloElement = deleteModalElement.querySelector('#deleteVagaTitulo');
+                            var modalInputElement = deleteModalElement.querySelector('#deleteVagaId');
+                            if (modalTituloElement) modalTituloElement.textContent = '"' + vagaTitulo + '"';
+                            if (modalInputElement) modalInputElement.value = vagaId;
+                        }
+                    });
+                }
+
+                // 2. LÓGICA DO MODAL EDITAR VAGA (AQUI ESTÁ A MÁGICA DAS FILIAIS)
+                var editModalElement = document.getElementById('modalEditarVaga');
+                if (editModalElement) {
+                    editModalElement.addEventListener('show.bs.modal', function (event) {
+                        var button = event.relatedTarget;
+                        if (!button) return;
+
+                        var vagaId = button.getAttribute('data-vaga-id');
+
+                        // Referências
+                        var modalTitulo = document.getElementById('editTitulo');
+                        var modalDescricao = document.getElementById('editDescricao');
+                        var modalStatus = document.getElementById('editStatus');
+                        var modalVagaIdInput = document.getElementById('editVagaId');
+                        var modalVagaIdOngInput = document.getElementById('editVagaIdOng');
+                        var modalImagemUrlInput = document.getElementById('editImagemUrlAtual');
+                        var modalImagePreview = document.getElementById('editImagePreview');
+                        var modalFileInput = document.getElementById('editImagemFile');
+                        var modalEnderecoSelect = document.getElementById('editEndereco');
+
+                        // Limpar
+                        modalTitulo.value = 'Carregando...';
+                        modalDescricao.value = '';
+                        modalStatus.value = '';
+                        modalVagaIdInput.value = '';
+                        modalVagaIdOngInput.value = '';
+                        modalImagemUrlInput.value = '';
+                        modalImagePreview.style.display = 'none';
+                        modalImagePreview.src = '';
+                        modalFileInput.value = '';
+
+                        // Passo 1: Buscar Filiais (Popula o Select)
+                        fetch('/Vagas/GetFiliais')
+                            .then(r => r.json())
+                            .then(filiais => {
+                                modalEnderecoSelect.innerHTML = '';
+                                // Adiciona Sede
+                                var optSede = document.createElement('option');
+                                optSede.value = "";
+                                optSede.text = "Sede Principal";
+                                modalEnderecoSelect.appendChild(optSede);
+
+                                // Adiciona Filiais
+                                filiais.forEach(item => {
+                                    var opt = document.createElement('option');
+                                    opt.value = item.id || item.Id;
+                                    opt.text = item.endereço || item.Endereco || item.nome;
+                                    modalEnderecoSelect.appendChild(opt);
+                                });
+
+                                // Passo 2: Buscar Detalhes da Vaga (Seleciona a opção correta)
+                                return fetch('/Vagas/GetVagaDetails?id=' + vagaId);
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                modalTitulo.value = data.titulo;
+                                modalDescricao.value = data.descricao;
+                                modalStatus.value = data.status;
+                                modalVagaIdInput.value = data.id;
+                                modalVagaIdOngInput.value = data.idONG;
+                                modalImagemUrlInput.value = data.imagemUrl;
+
+                                if (data.imagemUrl) {
+                                    modalImagePreview.src = data.imagemUrl;
+                                    modalImagePreview.style.display = 'block';
+                                } else {
+                                    modalImagePreview.style.display = 'none';
+                                }
+
+                                // Selecionar a filial correta
+                                if (data.idFilial) {
+                                    modalEnderecoSelect.value = data.idFilial;
+                                } else {
+                                    modalEnderecoSelect.value = ""; // Sede
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Erro:', error);
+                                modalTitulo.value = 'Erro ao carregar dados.';
+                            });
+                    });
+                }
+
+          
+                const vagasContainer = document.getElementById('vagas-container');
+                const vagasPrevBtn = document.getElementById('vaga-scroll-prev');
+                const vagasNextBtn = document.getElementById('vaga-scroll-next');
+
+                if (vagasContainer && vagasPrevBtn && vagasNextBtn) {
+
+                    // Renomeei a função para ser específica
+                    function checkVagasScrollButtons() {
+                        setTimeout(() => {
+                            const scrollLeft = vagasContainer.scrollLeft;
+                            const scrollWidth = vagasContainer.scrollWidth;
+                            const clientWidth = vagasContainer.clientWidth;
+
+                            if (scrollWidth <= clientWidth) {
+                                vagasPrevBtn.style.display = 'none';
+                                vagasNextBtn.style.display = 'none';
+                                return;
+                            }
+                            vagasPrevBtn.style.display = (scrollLeft > 0) ? 'flex' : 'none';
+                            vagasNextBtn.style.display = (scrollLeft < (scrollWidth - clientWidth - 1)) ? 'flex' : 'none';
+                        }, 1000);
+                    }
+
+                    vagasNextBtn.addEventListener('click', () => {
+                        const cardWidth = 320 + 24;
+                        vagasContainer.scrollLeft += cardWidth;
+                    });
+
+                    vagasPrevBtn.addEventListener('click', () => {
+                        const cardWidth = 320 + 24;
+                        vagasContainer.scrollLeft -= cardWidth;
+                    });
+
+                    vagasContainer.addEventListener('scroll', checkVagasScrollButtons);
+                    checkVagasScrollButtons();
+                    window.addEventListener('resize', checkVagasScrollButtons);
+                }
+
+                
+    </script>
+}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log("Script de Exclusão de Segurança Carregado!");
+
+            var modalExcluir = document.getElementById('modalExcluirMeta');
+
+            if (modalExcluir) {
+                modalExcluir.addEventListener('show.bs.modal', function (event) {
+                    // 1. O botão que foi clicado
+                    var button = event.relatedTarget;
+
+                    // 2. Extrai a informação dos atributos data-*
+                    var id = button.getAttribute('data-meta-id');
+                    var nome = button.getAttribute('data-meta-recurso');
+
+                    console.log("Tentando excluir meta:", id, nome);
+
+                    // 3. Atualiza o título do modal
+                    var modalTitle = modalExcluir.querySelector('#deleteMetaRecurso');
+                    if(modalTitle) modalTitle.textContent = nome;
+
+                    // 4. Atualiza o input hidden (ESSENCIAL para funcionar)
+                    var modalInput = modalExcluir.querySelector('#deleteMetaId');
+                    if(modalInput) modalInput.value = id;
+                });
+            }
+        });
+    </script>
+    <script>
+        // =================================================================
+        // 1. PREPARAÇÃO DE DADOS GLOBAIS (C# -> JavaScript)
+        // =================================================================
+        // Capturamos os dados do Razor aqui para usar no JavaScript sem erros.
+
+        var ONG_NOME = '@Html.Raw(Model.Nome ?? "Minha ONG")';
+        var ONG_ENDERECO = '@Html.Raw(Model.Endereço ?? "Endereço não informado")';
+
+        var ONG_FILIALS = [
+            @if (Model.Filials != null)
+            {
+                    foreach (var filial in Model.Filials)
+                    {
+                            // Cria objeto simples: ID, Nome e Endereço
+                            @:{ id: @filial.Id, nome: "@Html.Raw(filial.Nome ?? "")", endereco: "@Html.Raw(filial.Endereço ?? "")" },
+                    }
+            }
+        ];
+
+        // =================================================================
+        // 2. FUNÇÕES AUXILIARES
+        // =================================================================
+
+        /**
+         * Preenche o <select> de filiais no modal de edição de meta.
+         */
+        function popularFiliaisParaEdicao(selectElement, selectedFilialId) {
+            // Garante o uso das variáveis globais
+            const ongNome = (typeof ONG_NOME !== 'undefined') ? ONG_NOME : 'Sede Principal';
+            const ongEndereco = (typeof ONG_ENDERECO !== 'undefined') ? ONG_ENDERECO : '';
+            const filiais = (typeof ONG_FILIALS !== 'undefined') ? ONG_FILIALS : [];
+
+            selectElement.innerHTML = ''; // Limpa opções anteriores
+
+            // 1. Adiciona opção da Sede (Matriz) COM O ENDEREÇO
+            const sedeOption = document.createElement('option');
+            sedeOption.value = '';
+            sedeOption.textContent = `Sede Principal - ${ongEndereco}`;
+            selectElement.appendChild(sedeOption);
+
+            // 2. Adiciona opções das Filiais (se houver)
+            filiais.forEach(filial => {
+                const option = document.createElement('option');
+                option.value = filial.id;
+                // Exibe: "Nome da Filial - Endereço" ou apenas "Endereço"
+                const textoFilial = filial.nome ? `${filial.nome} - ${filial.endereco}` : filial.endereco;
+                option.textContent = textoFilial;
+                selectElement.appendChild(option);
+            });
+
+            // 3. Seleciona o valor correto (Sede ou Filial específica)
+            if (selectedFilialId) {
+                selectElement.value = selectedFilialId;
+            } else {
+                selectElement.value = ''; // Padrão: Sede
+            }
+        }
+
+        /**
+         * Configura o Scroll Horizontal (Carrossel)
+         */
+        function setupHorizontalScroll(containerId, prevBtnId, nextBtnId) {
+            const container = document.getElementById(containerId);
+            const prevBtn = document.getElementById(prevBtnId);
+            const nextBtn = document.getElementById(nextBtnId);
+
+            if (!container || !prevBtn || !nextBtn) return;
+
+            function checkButtons() {
+                setTimeout(() => {
+                    if (container.scrollWidth <= container.clientWidth) {
+                        prevBtn.style.display = 'none';
+                        nextBtn.style.display = 'none';
+                        return;
+                    }
+                    const maxScroll = container.scrollWidth - container.clientWidth;
+                    prevBtn.style.display = (container.scrollLeft > 0) ? 'flex' : 'none';
+                    nextBtn.style.display = (container.scrollLeft < maxScroll - 5) ? 'flex' : 'none';
+                }, 200);
+            }
+
+            nextBtn.addEventListener('click', () => container.scrollBy({ left: 340, behavior: 'smooth' }));
+            prevBtn.addEventListener('click', () => container.scrollBy({ left: -340, behavior: 'smooth' }));
+            container.addEventListener('scroll', checkButtons);
+            window.addEventListener('resize', checkButtons);
+            checkButtons();
+        }
+
+        // =================================================================
+        // 3. EXECUÇÃO AO CARREGAR A PÁGINA
+        // =================================================================
+        window.addEventListener('load', function() {
+
+            console.log("Scripts do Dashboard carregados.");
+
+            // -------------------------------------------------------------
+            // A. MODAL EXCLUIR META
+            // -------------------------------------------------------------
+            var deleteMetaModal = document.getElementById('modalExcluirMeta');
+            if (deleteMetaModal) {
+                deleteMetaModal.addEventListener('show.bs.modal', function (event) {
+                    var button = event.relatedTarget;
+                    if (button) {
+                        var metaId = button.getAttribute('data-meta-id');
+                        var metaRecurso = button.getAttribute('data-meta-recurso');
+
+                        console.log("Excluir Meta:", metaId, metaRecurso);
+
+                        var modalRecursoElement = deleteMetaModal.querySelector('#deleteMetaRecurso');
+                        var modalInputElement = deleteMetaModal.querySelector('#deleteMetaId');
+
+                        if (modalRecursoElement) modalRecursoElement.textContent = '"' + metaRecurso + '"';
+                        if (modalInputElement) modalInputElement.value = metaId;
+                    }
+                });
+            }
+
+            // -------------------------------------------------------------
+            // B. MODAL EDITAR META
+            // -------------------------------------------------------------
+            var editMetaModal = document.getElementById('modalEditarMeta');
+            if (editMetaModal) {
+                editMetaModal.addEventListener('show.bs.modal', function (event) {
+                    var button = event.relatedTarget;
+                    if (!button) return;
+
+                    var metaId = button.getAttribute('data-meta-id');
+
+                    // Referências aos campos
+                    var modalIdInput = document.getElementById('editMetaId');
+                    var modalRecursoInput = document.getElementById('editMetaRecurso');
+                    var modalDescricaoInput = document.getElementById('editMetaDescricao');
+                    var modalValorAlvoInput = document.getElementById('editMetaValorAlvo');
+                    var modalStatusInput = document.getElementById('editMetaStatus');
+                    var modalDataFimInput = document.getElementById('editMetaDataFim');
+                    var modalFilialInput = document.getElementById('editMetaFilialId');
+                    var modalFileInput = document.getElementById('editMetaImagemFile');
+
+                    // Estado de Carregamento
+                    if(modalRecursoInput) modalRecursoInput.value = 'Carregando...';
+
+                    // Popula o select IMEDIATAMENTE (Sede + Filiais)
+                    if(modalFilialInput) popularFiliaisParaEdicao(modalFilialInput, null);
+
+                    // Busca detalhes da Meta no servidor
+                    fetch('/Metas/GetMetaDetails?id=' + metaId)
+                        .then(response => {
+                            if (!response.ok) throw new Error('Falha ao buscar dados da meta.');
+                            return response.json();
+                        })
+                        .then(data => {
+                            if(modalIdInput) modalIdInput.value = data.id;
+                            if(modalRecursoInput) modalRecursoInput.value = data.recurso;
+                            if(modalDescricaoInput) modalDescricaoInput.value = data.descricao;
+                            if(modalValorAlvoInput) modalValorAlvoInput.value = data.valorAlvo;
+                            if(modalStatusInput) modalStatusInput.value = data.status;
+                            if(modalFileInput) modalFileInput.value = ''; // Limpa input de arquivo
+
+                            // Seleciona a filial correta retornada pelo banco
+                            if(modalFilialInput) popularFiliaisParaEdicao(modalFilialInput, data.filialId);
+
+                            // Formata data (AAAA-MM-DD)
+                            if (modalDataFimInput) {
+                                if (data.dataFim) {
+                                    modalDataFimInput.value = data.dataFim.split('T')[0];
+                                } else {
+                                    modalDataFimInput.value = '';
+                                }
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erro no fetch:', error);
+                            if(modalRecursoInput) modalRecursoInput.value = 'Erro ao carregar dados.';
+                        });
+                });
+            }
+
+            // -------------------------------------------------------------
+            // C. MODAL EXCLUIR VAGA
+            // -------------------------------------------------------------
+            var deleteVagaModal = document.getElementById('modalExcluirVaga');
+            if (deleteVagaModal) {
+                deleteVagaModal.addEventListener('show.bs.modal', function (event) {
+                    var button = event.relatedTarget;
+                    if (button) {
+                        var vagaId = button.getAttribute('data-vaga-id');
+                        var vagaTitulo = button.getAttribute('data-vaga-titulo');
+
+                        var modalTitulo = deleteVagaModal.querySelector('#deleteVagaTitulo');
+                        var modalInput = deleteVagaModal.querySelector('#deleteVagaId');
+
+                        if(modalTitulo) modalTitulo.textContent = '"' + vagaTitulo + '"';
+                        if(modalInput) modalInput.value = vagaId;
+                    }
+                });
+            }
+
+            // -------------------------------------------------------------
+            // D. MODAL EDITAR VAGA
+            // -------------------------------------------------------------
+            var editVagaModal = document.getElementById('modalEditarVaga');
+            if (editVagaModal) {
+                editVagaModal.addEventListener('show.bs.modal', function (event) {
+                    var button = event.relatedTarget;
+                    if (!button) return;
+
+                    var vagaId = button.getAttribute('data-vaga-id');
+                    var modalEnderecoSelect = document.getElementById('editEndereco');
+
+                    // Usa o fetch existente para pegar filiais (como estava original) ou poderiamos usar ONG_FILIALS
+                    fetch('/Vagas/GetFiliais')
+                        .then(r => r.json())
+                        .then(filiais => {
+                             if(modalEnderecoSelect) {
+                                 modalEnderecoSelect.innerHTML = '<option value="">Sede Principal</option>';
+                                 filiais.forEach(f => {
+                                     var opt = document.createElement('option');
+                                     opt.value = f.id;
+                                     opt.text = f.endereço || f.nome;
+                                     modalEnderecoSelect.appendChild(opt);
+                                 });
+                             }
+                             return fetch('/Vagas/GetVagaDetails?id=' + vagaId);
+                        })
+                        .then(r => r.json())
+                        .then(data => {
+                            var elTitulo = document.getElementById('editTitulo');
+                            var elDesc = document.getElementById('editDescricao');
+                            var elStatus = document.getElementById('editStatus');
+                            var elId = document.getElementById('editVagaId');
+                            var elOngId = document.getElementById('editVagaIdOng');
+                            var elImgUrl = document.getElementById('editImagemUrlAtual');
+                            var preview = document.getElementById('editImagePreview');
+
+                            if(elTitulo) elTitulo.value = data.titulo;
+                            if(elDesc) elDesc.value = data.descricao;
+                            if(elStatus) elStatus.value = data.status;
+                            if(elId) elId.value = data.id;
+                            if(elOngId) elOngId.value = data.idONG;
+                            if(elImgUrl) elImgUrl.value = data.imagemUrl;
+
+                            if(modalEnderecoSelect) {
+                                modalEnderecoSelect.value = data.idFilial ? data.idFilial : "";
+                            }
+
+                            if(preview) {
+                                if(data.imagemUrl) {
+                                    preview.src = data.imagemUrl;
+                                    preview.style.display = 'block';
+                                } else {
+                                    preview.style.display = 'none';
+                                }
+                            }
+                        });
+                });
+            }
+
+            // -------------------------------------------------------------
+            // E. MODAL VER E GERENCIAR DOAÇÕES
+            // -------------------------------------------------------------
+            var verDoacoesModalElement = document.getElementById('modalVerDoacoes');
+            if (verDoacoesModalElement) {
+                var modalConteudo = document.getElementById('modalVerDoacoesConteudo');
+                var modalTitulo = document.getElementById('modalVerDoacoesTitulo');
+
+                // 1. Ao abrir o modal: Busca lista de doações
+                verDoacoesModalElement.addEventListener('show.bs.modal', function (event) {
+                    var button = event.relatedTarget;
+                    if (!button) return;
+
+                    var metaId = button.getAttribute('data-meta-id');
+                    var metaTitulo = button.getAttribute('data-meta-titulo');
+
+                    if(modalTitulo) modalTitulo.textContent = metaTitulo;
+                    if(modalConteudo) modalConteudo.innerHTML = '<div class="text-center p-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Carregando...</span></div><p class="mt-2">Buscando doações...</p></div>';
+
+                    fetch(`/Doacoes/GetDoacoesParaMeta?metaId=${metaId}`)
+                        .then(response => {
+                            if (!response.ok) throw new Error('Falha ao buscar doações.');
+                            return response.text();
+                        })
+                        .then(html => {
+                            if(modalConteudo) modalConteudo.innerHTML = html;
+                        })
+                        .catch(error => {
+                            console.error('Erro no fetch:', error);
+                            if(modalConteudo) modalConteudo.innerHTML = '<div class="alert alert-danger">Erro ao carregar doações. Tente novamente.</div>';
+                        });
+                });
+
+                // 2. Cliques dentro do Modal (Botões de Ação: Confirmar, etc)
+                if(modalConteudo) {
+                    modalConteudo.addEventListener('click', function(e) {
+
+                        var targetButton = e.target.closest('.btn-acao-doacao');     // Botão de Status
+                        var targetEditButton = e.target.closest('.btn-editar-status'); // Botão Lápis
+
+                        // CENÁRIO 1: Clicou em um botão de alterar status
+                        if (targetButton) {
+                            if (targetButton.disabled) return;
+
+                            var doacaoId = targetButton.getAttribute('data-doacao-id');
+                            var novoStatus = targetButton.getAttribute('data-novo-status');
+                            var metaId = targetButton.getAttribute('data-meta-id');
+
+                            var statusBadge = document.getElementById(`doacao-status-${doacaoId}`);
+                            var actionButtonsGroup = document.getElementById(`doacao-actions-${doacaoId}`);
+                            var allButtonsInGroup = actionButtonsGroup.querySelectorAll('.btn-acao-doacao');
+                            var originalButtonHtml = targetButton.innerHTML;
+
+                            // UI de Carregamento
+                            allButtonsInGroup.forEach(btn => {
+                                btn.disabled = true;
+                                if (btn === targetButton) {
+                                    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+                                }
+                            });
+
+                            // Chamada AJAX para atualizar status
+                            fetch(`/Doacoes/AtualizarStatusDoacao`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                                body: `doacaoId=${doacaoId}&status=${novoStatus}&metaId=${metaId}`
+                            })
+                            .then(response => response.json())
+                            .then(result => {
+                                if (result.success) {
+                                    // Atualiza visualmente
+                                    if(statusBadge) {
+                                        statusBadge.classList.remove('bg-success', 'bg-warning', 'bg-danger', 'bg-info', 'text-dark');
+                                        statusBadge.textContent = novoStatus;
+                                        if(novoStatus == "Confirmada") statusBadge.classList.add('bg-success');
+                                        else if(novoStatus == "Pendente") statusBadge.classList.add('bg-warning', 'text-dark');
+                                        else if(novoStatus == "NaoRealizada") statusBadge.classList.add('bg-danger');
+                                        else statusBadge.classList.add('bg-info');
+                                    }
+
+                                    if(actionButtonsGroup) {
+                                        actionButtonsGroup.innerHTML = `
+                                            <button type="button" class="btn btn-sm btn-outline-secondary btn-editar-status"
+                                                    data-doacao-id="${doacaoId}"
+                                                    data-meta-id="${metaId}">
+                                                <i class="bi bi-pencil"></i> Editar
+                                            </button>`;
+                                    }
+
+                                    // Atualiza barra de progresso no fundo
+                                    var textoProgresso = document.getElementById(`meta-progresso-texto-${metaId}`);
+                                    var barraProgresso = document.getElementById(`meta-progresso-barra-${metaId}`);
+
+                                    if (textoProgresso && barraProgresso) {
+                                        var novoAtual = parseFloat(result.novoValorAtual);
+                                        var alvo = parseFloat(result.valorAlvo);
+                                        var novoPercent = (alvo > 0) ? (novoAtual / alvo) * 100 : 0;
+                                        var novoPercentF = novoPercent.toFixed(0);
+
+                                        textoProgresso.textContent = `Progresso: ${novoAtual} de ${alvo}`;
+                                        barraProgresso.style.width = novoPercentF + '%';
+                                        barraProgresso.textContent = novoPercentF + '%';
+                                        barraProgresso.setAttribute('aria-valuenow', novoPercentF);
+                                    }
+
+                                } else {
+                                    alert('Erro: ' + (result.message || 'Erro desconhecido.'));
+                                    allButtonsInGroup.forEach(btn => {
+                                        btn.disabled = false;
+                                        if (btn === targetButton) btn.innerHTML = originalButtonHtml;
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Erro na atualização:', error);
+                                alert('Erro de rede. Tente novamente.');
+                                allButtonsInGroup.forEach(btn => {
+                                    btn.disabled = false;
+                                    if (btn === targetButton) btn.innerHTML = originalButtonHtml;
+                                });
+                            });
+                        }
+
+                        // CENÁRIO 2: Clicou no botão "Editar" (Lápis)
+                        else if (targetEditButton) {
+                            var doacaoId = targetEditButton.getAttribute('data-doacao-id');
+                            var metaId = targetEditButton.getAttribute('data-meta-id');
+                            var actionButtonsGroup = document.getElementById(`doacao-actions-${doacaoId}`);
+                            var statusBadge = document.getElementById(`doacao-status-${doacaoId}`);
+                            var currentStatus = statusBadge.textContent.trim();
+
+                            var buttonsHtml = '';
+
+                            if (currentStatus !== "Confirmada") {
+                                buttonsHtml += `<button type="button" class="btn btn-sm btn-outline-success btn-acao-doacao"
+                                                    data-doacao-id="${doacaoId}" data-novo-status="Confirmada" data-meta-id="${metaId}">
+                                                    Confirmar
+                                                </button> `;
+                            }
+                            if (currentStatus !== "EmContato") {
+                                buttonsHtml += `<button type="button" class="btn btn-sm btn-outline-primary btn-acao-doacao"
+                                                    data-doacao-id="${doacaoId}" data-novo-status="EmContato" data-meta-id="${metaId}">
+                                                    Em Contato
+                                                </button> `;
+                            }
+                            if (currentStatus !== "NaoRealizada") {
+                                buttonsHtml += `<button type="button" class="btn btn-sm btn-outline-danger btn-acao-doacao"
+                                                    data-doacao-id="${doacaoId}" data-novo-status="NaoRealizada" data-meta-id="${metaId}">
+                                                    Não Realizada
+                                                </button>`;
+                            }
+
+                            actionButtonsGroup.innerHTML = buttonsHtml;
+                        }
+                    });
+                }
+            }
+
+            // -------------------------------------------------------------
+            // F. INICIALIZA SCROLLERS
+            // -------------------------------------------------------------
+            setupHorizontalScroll('vagas-container', 'vaga-scroll-prev', 'vaga-scroll-next');
+            setupHorizontalScroll('metas-container', 'meta-scroll-prev', 'meta-scroll-next');
+
+        }); // Fim do window.load
+    </script>
+
+                          

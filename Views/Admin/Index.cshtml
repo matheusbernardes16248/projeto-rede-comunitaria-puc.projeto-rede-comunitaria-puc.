@@ -1,0 +1,44 @@
+﻿@*@using System.Security.Claims;
+@model IEnumerable<nexumApp.Models.Ong>
+@{
+    ViewData["Title"] = "Index";
+}
+<h1>ONG pendentes</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Nome)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Descriçao)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Endereço)
+            </th>
+            <th>
+                Aprovação
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nome)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Descriçao)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Endereço)
+            </td>
+            <td>
+               <form asp-controller="Admin" asp-action="Approve" asp-route-id="@item.Id">
+                   <input type="submit" value="Aprovar" class="btn btn-primary" />
+               </form>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>*@
