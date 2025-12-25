@@ -1,0 +1,127 @@
+﻿h2 {
+    color: #16435D;
+    font-weight: 600;
+    font-size: clamp(25px, 7vw, 44px);
+    margin: 25px 0 20px 0;
+}
+
+h5 {
+    color: #16435D;
+    font-weight: 600;
+    font-size: 28px;
+    margin: 25px 0 20px 0;
+}
+
+.btn-sm {
+    color: #ffffff;
+    background: #2987bf;
+    border: 1.5px solid transparent;
+    transition: .2s;
+    font-size: 15px;
+    inline-size: 120px;
+    padding: 6px 12px;
+    border-radius: 24px;
+}
+
+    .btn-sm:hover {
+        color: #16435D;
+        background-color: #ffffff;
+        border: 1.5px solid #16435D;
+    }
+
+.fale-table {
+    width: 100%;
+}
+
+    .fale-table th, .fale-table td {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        vertical-align: central;
+    }
+
+    .fale-table .col-acoes {
+        width: 230px;
+        align-items: center;
+    }
+
+.actions-wrap {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-sm-reply,
+.btn-action,
+.btn-sm-view {
+    inline-size: 120px;
+    padding: 6px 12px;
+    border-radius: 24px;
+    font-size: 15px;
+}
+
+
+.btn-sm-reply,
+.btn-sm-view {
+    color: #fff;
+    background: #2987bf;
+    border: 1.5px solid transparent;
+    transition: .2s;
+}
+
+    .btn-sm-reply:hover {
+        color: #2987bf;
+        background: #fff;
+        border-color: #2987bf;
+    }
+
+    .btn-sm-view:hover {
+        color: #2987bf;
+        background: #fff;
+        border-color: #2987bf;
+    }
+
+.btn-action {
+    color: #2987bf;
+    background: #fff;
+    border: 1.5px solid #2987bf;
+    transition: .2s;
+}
+
+    .btn-action:hover {
+        color: #fff;
+        background: #2987bf;
+        border-color: #2987bf;
+    }
+
+.btn-fechar{
+    border-radius: 24px;
+}
+
+.btn-enviar {
+    border-radius: 24px;
+}
+
+@media (max-width: 992px) {
+    .fale-table th, .fale-table td {
+        white-space: normal;
+    }
+}
+
+@media (max-width: 768px) {
+    .fale-table .col-acoes {
+        width: auto;
+    }
+
+    .actions-wrap {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn-sm-reply,
+    .btn-action,
+    .btn-sm-view {
+        inline-size: 100%;
+    }
+}
+
+
